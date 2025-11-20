@@ -1,0 +1,20 @@
+{
+  "name": "sse-sample",
+  "version": "1.0.0",
+  "description": "Server-Sent Events(SSE)を使ってみる",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/walk8243/sse-sample.git"
+  },
+  "keywords": [],
+  "author": "walk8243 <walk8243@gmail.com> (https://walk8243.xyz/)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/walk8243/sse-sample/issues"
+  },
+  "homepage": "https://github.com/walk8243/sse-sample#readme"
+}
