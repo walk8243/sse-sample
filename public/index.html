@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <title>SSE Demo</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 2rem;
+    }
+
+    #output {
+      background: #f0f0f0;
+      padding: 1rem;
+      border-radius: 8px;
+      min-height: 100px;
+      margin-top: 1rem;
+      white-space: pre-wrap;
+      /* 改行などを維持 */
+      font-size: 1.2rem;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>SSE 体験デモ</h1>
+  <p>ボタンを押すと、サーバから文字が流れてきます。</p>
+  <button onclick="startStream()">受信開始</button>
+
+  <div id="output">ここにテキストが表示されます...</div>
+
+  <script>
+    let eventSource = null;
+
+    function startStream() {
+      const outputDiv = document.getElementById('output');
+      outputDiv.textContent = ""; // リセット
+
+      // 以前の接続があれば閉じる
+      if (eventSource) {
+        eventSource.close();
+      }
+
+      // 1. サーバのエンドポイントを指定して接続開始
+      eventSource = new EventSource('http://localhost:8000/stream');
+
+      // 2. メッセージを受け取った時の処理
+      eventSource.onmessage = function (event) {
+        // 終了合図が来たら接続を切る
+        if (event.data === "[DONE]") {
+          eventSource.close();
+          console.log("受信完了");
+          return;
+        }
+
+        // 画面に文字を追記
+        outputDiv.textContent += event.data;
+      };
+
+      // エラー時の処理
+      eventSource.onerror = function (err) {
+        console.error("エラーが発生しました:", err);
+        eventSource.close();
+      };
+    }
+  </script>
+</body>
+
+</html>
