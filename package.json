@@ -2,6 +2,7 @@
   "name": "sse-sample",
   "version": "1.0.0",
   "description": "Server-Sent Events(SSE)を使ってみる",
+  "type": "module",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
