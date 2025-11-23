@@ -32,6 +32,7 @@
 <body>
   <h1>SSE 体験デモ</h1>
   <p>現在時刻: <span id="now-time"></span></p>
+  <p>メッセージ: <span id="message"></span></p>
   <p>ボタンを押すと、サーバから文字が流れてきます。</p>
   <button onclick="startStream()">受信開始</button>
 
@@ -77,6 +78,8 @@
     function startBroadcast() {
       const nowTimeSpan = document.getElementById('now-time');
       nowTimeSpan.textContent = ""; // リセット
+      const messageSpan = document.getElementById('message');
+      messageSpan.textContent = ""; // リセット
 
       // 以前の接続があれば閉じる
       if (broadcastEventSource) {
@@ -96,14 +99,19 @@
         }
 
         // 画面に時刻を追記
-        nowTimeSpan.textContent = event.data;
+        messageSpan.textContent = event.data;
       };
 
+      // 時刻が更新されたら画面に追記
+      broadcastEventSource.addEventListener('timestamp', function (event) {
+        nowTimeSpan.textContent = event.data;
+      });
+
       // エラー時の処理
-      eventSource.onerror = function (err) {
+      broadcastEventSource.addEventListener('error', function (err) {
         console.error("エラーが発生しました:", err);
-        eventSource.close();
-      };
+        broadcastEventSource.close();
+      });
     }
     startBroadcast();
   </script>

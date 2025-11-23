@@ -8,8 +8,9 @@ const router = express.Router();
 let clients = [];
 
 // 接続中の全クライアントにメッセージを送信する
-const sendMessage = (message) => {
+const sendMessage = ({ type = 'message', message }) => {
     for (const client of clients) {
+        client.write(`event: ${type}\n`);
         client.write(`data: ${message}\n\n`);
     }
 }
@@ -32,14 +33,29 @@ router.get('', (req, res) => {
 
 // 3. 別の場所でイベントが発生したら、全員に配る
 // 例：3秒ごとに全ユーザへ「現在時刻」を一斉送信
-setInterval(() => {
+const timer = setInterval(() => {
     console.log(`ブロードキャスト中: 接続数 ${clients.length}`);
-    sendMessage(`${new Date().toLocaleTimeString()}`);
+    sendMessage({ type: 'timestamp', message: new Date().toLocaleTimeString() });
 }, 3000);
 
+// コマンドラインからメッセージを送信する
 const rl = readline.createInterface({ input, output });
 rl.on('line', (line) => {
-    sendMessage(line);
+    sendMessage({ message: line });
 });
+rl.on('SIGINT', () => {
+    console.log('Ctrl+Cが押されました');
+    process.emit('SIGINT');
+});
+
+// プログラムを終了する
+const exitHandler = () => {
+	rl.close();
+    sendMessage({ message: '[DONE]' });
+    clearInterval(timer);
+};
+process.on('SIGINT', exitHandler);
+process.on('SIGTERM', exitHandler);
+process.on('SIGQUIT', exitHandler);
 
 export default router;
