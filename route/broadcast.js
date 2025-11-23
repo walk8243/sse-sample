@@ -5,6 +5,13 @@ const router = express.Router();
 // 1. 接続中の全クライアントを保存するリスト（グローバル変数）
 let clients = [];
 
+// 接続中の全クライアントにメッセージを送信する
+const sendMessage = (message) => {
+    for (const client of clients) {
+        client.write(`data: ${message}\n\n`);
+    }
+}
+
 router.get('', (req, res) => {
     // ヘッダ設定
     res.setHeader('Content-Type', 'text/event-stream');
@@ -24,12 +31,8 @@ router.get('', (req, res) => {
 // 3. 別の場所でイベントが発生したら、全員に配る
 // 例：3秒ごとに全ユーザへ「現在時刻」を一斉送信
 setInterval(() => {
-    const message = `${new Date().toLocaleTimeString()}`;
     console.log(`ブロードキャスト中: 接続数 ${clients.length}`);
-
-	for (const client of clients) {
-		client.write(`data: ${message}\n\n`);
-	}
+    sendMessage(`${new Date().toLocaleTimeString()}`);
 }, 3000);
 
 export default router;
