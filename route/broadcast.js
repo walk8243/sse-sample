@@ -1,3 +1,5 @@
+import * as readline from 'node:readline';
+import { stdin as input, stdout as output } from 'node:process';
 import express from 'express';
 
 const router = express.Router();
@@ -34,5 +36,10 @@ setInterval(() => {
     console.log(`ブロードキャスト中: 接続数 ${clients.length}`);
     sendMessage(`${new Date().toLocaleTimeString()}`);
 }, 3000);
+
+const rl = readline.createInterface({ input, output });
+rl.on('line', (line) => {
+    sendMessage(line);
+});
 
 export default router;
